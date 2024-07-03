@@ -74,35 +74,18 @@ def clip_video(video_file, output_file, start_time, end_time):
     ]
     subprocess.run(command, check=True)
 
-def main(video_file, transcribe_file, search_texts):
-    # Load transcript from file
-    with open(transcribe_file, 'r') as f:
-        transcript = json.load(f)
-   
-    # Find time codes for the search texts
-    timecodes = find_timecodes(transcript, search_texts)
-   
-    # Clip video for each timecode found
-    for i, tc in enumerate(timecodes):
-        output_file = f'clip_{i+1}.mp4'
-        clip_video(video_file, output_file, tc['start'], tc['end'])
-        print(f'Created clip: {output_file} for text: "{tc["text"]}"')
-
 def print_usage():
-    print("python transcribedit.py <video file path> <Output clip file name> <Search text> <Transcribe output file>")
+    print("python transclipping.py <video file path> <Transcribe output file> <Search text> <Output clip file name>")
     exit(0)
 
 if __name__ == "__main__":
     import sys
-    #video_file = sys.argv[1]
-    #transcribe_file = sys.argv[2]
-    #search_texts = sys.argv[3:]
-    if not len(sys.argv) == 4:
+    if not len(sys.argv) == 5:
         print_usage()
     video_file = sys.argv[1]
     output_file = sys.argv[4]
     transcribe_file = sys.argv[2]
-    search_text = "Indian troops along the line of actual control in Ladakh has begun."
+    search_text = sys.argv[3]
     transcript = get_word_timecodes(transcribe_file)
     timecodes = find_timecodes(transcript, search_text)
     print(timecodes)
@@ -120,5 +103,4 @@ if __name__ == "__main__":
         print_usage()
     if timecodes:
         clip_video(video_file, output_file, timecodes[0]['start_time'], timecodes[0]['end_time'])
-    
-    #main(video_file, transcribe_file, search_texts)
+        print(f'Created clip: {output_file} for text: "{search_text}"')
